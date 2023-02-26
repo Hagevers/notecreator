@@ -9,7 +9,7 @@ export const NoteEditor = ({
 } : {
     onSave: (note: { title: string, content: string }) => void }
 ) => {
-    
+
     const [code, setCode] = useState<string>("");
     const [title, setTitle] = useState<string>("");
 
@@ -38,7 +38,7 @@ export const NoteEditor = ({
                     className="border border-gray-300"
                 />
             </div>
-            <div className="card-actions justify-end">
+            <div className="card-actions justify-end mr-8 mb-5">
                 <button
                     onClick={() => {
                         onSave({

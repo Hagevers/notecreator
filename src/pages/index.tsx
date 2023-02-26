@@ -78,6 +78,7 @@ const Content: React.FC = () => {
             <li key={topic.id}>
               <a
                 href="#"
+                className={selectedTopic?.id === topic.id ? `active` : ""}
                 onClick={(evt) => {
                   evt.preventDefault();
                   setSelectedTopic(topic)
