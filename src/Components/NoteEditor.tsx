@@ -5,9 +5,12 @@ import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 
 export const NoteEditor = ({
-    onSave, 
-} : {
-    onSave: (note: { title: string, content: string }) => void }
+    onSave,loading, setLoading
+}: {
+    onSave: (note: { title: string, content: string }) => void,
+    loading: boolean,
+    setLoading: Function
+}
 ) => {
 
     const [code, setCode] = useState<string>("");
@@ -20,20 +23,19 @@ export const NoteEditor = ({
                     <input
                         type="text"
                         placeholder="Note title"
-                        className="input-primary input input-lg w-full font-bold"
+                        className="input-primary input input-lg w-full font-bold focus:outline-0"
                         value={title}
                         onChange={(e) => setTitle(e.currentTarget.value)}
                     />
                 </h2>
                 <CodeMirror
                     value={code}
-                    width="500px"
                     height="30vh"
                     minWidth="100%"
-                    minHeight="30vh"
                     extensions={[
-                        markdown({ base: markdownLanguage, codeLanguages: languages}),
+                        markdown({ base: markdownLanguage, codeLanguages: languages }),
                     ]}
+                    theme={"dark"}
                     onChange={(value) => setCode(value)}
                     className="border border-gray-300"
                 />
@@ -41,6 +43,7 @@ export const NoteEditor = ({
             <div className="card-actions justify-end mr-8 mb-5">
                 <button
                     onClick={() => {
+                        setLoading(true);
                         onSave({
                             title,
                             content: code,
@@ -48,7 +51,7 @@ export const NoteEditor = ({
                         setCode("");
                         setTitle("");
                     }}
-                    className="btn-primary btn"
+                    className={`btn-primary btn ${loading ? 'loading' : ''}`}
                     disabled={title.trim().length === 0 || code.trim().length === 0}
                 >
                     Save

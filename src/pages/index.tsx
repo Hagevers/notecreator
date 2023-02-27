@@ -32,6 +32,8 @@ const Content: React.FC = () => {
   const { data: sessionData } = useSession();
 
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [noteCreateLoader, setNoteCreateLoader] = useState<boolean>(false);
+  const [noteDeleteLoader, setNoteDeleteLoader] = useState<boolean>(false);
 
   const { data: topics, refetch: refetchTopics } = api.topic.getAll.useQuery(
     undefined,
@@ -49,6 +51,13 @@ const Content: React.FC = () => {
     }
   });
 
+  const deleteTopic = api.topic.delete.useMutation({
+    onSuccess: () => {
+      void refetchTopics();
+    }
+  });
+ 
+
   const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
     {
       topicId: selectedTopic?.id ?? "",
@@ -61,24 +70,31 @@ const Content: React.FC = () => {
   const createNote = api.note.create.useMutation({
     onSuccess: () => {
       void refetchNotes();
+      setNoteCreateLoader(false);
     }
   });
 
   const deleteNote = api.note.delete.useMutation({
     onSuccess: () => {
       void refetchNotes();
+      setNoteDeleteLoader(false);
     }
   });
 
+  const handleDeleteTopic = () => {
+    void deleteTopic.mutate({ topicId: selectedTopic?.id ?? "" });
+    setSelectedTopic(null);
+  }
+
   return (
     <div className="mx-5 mt-5 grid grid-cols-4 gap-2">
-      <div className="px-2">
-        <ul className="menu rounded-box w-56 bg-base-100 p-2">
+      <div className="px-2 mt-2">
+        <ul className="menu rounded-box bg-base-100 p-2">
           {topics?.map((topic) => (
-            <li key={topic.id}>
+            <li key={topic.id} className={`flex-row relative`}>
               <a
                 href="#"
-                className={selectedTopic?.id === topic.id ? `active` : ""}
+                className={`flex-1 ${selectedTopic?.id === topic.id ? `active` : ""} `}
                 onClick={(evt) => {
                   evt.preventDefault();
                   setSelectedTopic(topic)
@@ -86,16 +102,24 @@ const Content: React.FC = () => {
               >
                 {topic.title}
               </a>
+              {selectedTopic?.id === topic.id ?
+                <label
+                  className={`absolute right-0 text-white`}
+                  htmlFor="delete-popup"
+                >
+                  X
+                </label>
+                : null}
             </li>
           ))}
         </ul>
         <div className="divider"></div>
-        <input 
+        <input
           type="text"
-          placeholder="New Topic" 
-          className="input-bordered input input-sm w-full"
+          placeholder="New Topic"
+          className="input-bordered input input-sm w-full focus:outline-0"
           onKeyDown={(e) => {
-            if(e.key === "Enter") {
+            if (e.key === "Enter") {
               createTopic.mutate({
                 title: e.currentTarget.value,
               });
@@ -109,19 +133,42 @@ const Content: React.FC = () => {
           {notes?.map((note) => (
             <div key={note.id} className="mt-5">
               <NoteCard
+                loading={noteDeleteLoader}
+                setLoading={setNoteDeleteLoader}
                 note={note}
-                onDelete={() => void deleteNote.mutate({ id: note.id})}
+                onDelete={() => void deleteNote.mutate({ id: note.id })}
               />
             </div>
           ))}
         </div>
-        <NoteEditor onSave={({ title, content }) => {
-          void createNote.mutate({
-            title,
-            content,
-            topicId: selectedTopic?.id ?? "",
-          });
-        }}/>
+        <NoteEditor
+          loading={noteCreateLoader}
+          setLoading={setNoteCreateLoader}
+          onSave={({ title, content }) => {
+            void createNote.mutate({
+              title,
+              content,
+              topicId: selectedTopic?.id ?? "",
+            });
+          }} />
+      </div>
+      <input type="checkbox" id="delete-popup" className="modal-toggle" />
+      <div className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Are you sure you want to delete this topic?</h3>
+          <p className="py-4">
+            <div>Be cautious!</div>
+            Topics that have been deleted cannot be retrieved and all the notes inside will be deleted also!
+          </p>
+          <div className="modal-action">
+            <label htmlFor="delete-popup" className="btn btn-accent">Close</label>
+            <label htmlFor="delete-popup" className="btn btn-error"
+              onClick={handleDeleteTopic}
+            >
+              Delete
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   )

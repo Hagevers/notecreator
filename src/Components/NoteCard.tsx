@@ -6,10 +6,14 @@ type Note = RouterOutputs["note"]["getAll"][0];
 
 export const NoteCard = ({
     note,
-    onDelete
+    onDelete,
+    loading,
+    setLoading
 }: {
-    note: Note;
-    onDelete: () => void;
+    note: Note,
+    onDelete: () => void,
+    loading: boolean,
+    setLoading: Function
 }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
@@ -17,9 +21,8 @@ export const NoteCard = ({
         <div className="card mt-5 border border-gray-200 bg-base-100 shadow-xl">
             <div className="card-body m-0 p-3">
                 <div
-                    className={`collapse-arrow ${
-                        isExpanded ? "collapse-open" : ""
-                    } collapse`}
+                    className={`collapse-arrow ${isExpanded ? "collapse-open" : ""
+                        } collapse`}
                     onClick={() => setIsExpanded(!isExpanded)}
                 >
                     <div className="collapse-title text-xl font-bold">{note.title}</div>
@@ -30,7 +33,14 @@ export const NoteCard = ({
                     </div>
                 </div>
                 <div className="card-actions mx-2 flex justify-end">
-                    <button className="btn-warning btn-xs btn px-5" onClick={onDelete}>
+                    <button
+                        className={`btn-warning btn-xs btn px-5 ${loading ? 'loading' : '' }`}
+                        onClick={()=> {
+                            setLoading(true);
+                            onDelete();
+                        }}
+                        disabled={note.title.trim().length === 0}
+                    >
                         Delete
                     </button>
                 </div>
