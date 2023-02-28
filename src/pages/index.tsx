@@ -86,14 +86,14 @@ const Content: React.FC = () => {
 
   const handleDeleteTopic = () => {
     setTopicDeleteLoader(true);
-    deleteTopic.mutateAsync({ topicId: selectedTopic?.id ?? "" });
+    deleteTopic.mutate({ topicId: selectedTopic?.id ?? "" });
     setSelectedTopic(null);
     setDisplayModal(false);
   }
 
   const handleDeleteNote = (noteId: string) => {
     setNoteDeleteLoader(true);
-    deleteNote.mutateAsync({ id: noteId });
+    deleteNote.mutate({ id: noteId });
     setNoteDeleteLoader(false);
     setNoteDeleteLoader(false);
   }
