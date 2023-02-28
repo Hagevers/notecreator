@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import ReactMarkdown from "react-markdown";
 import { type RouterOutputs } from "~/utils/api";
 
@@ -13,7 +13,7 @@ export const NoteCard = ({
     note: Note,
     onDelete: () => void,
     loading: boolean,
-    setLoading: Function
+    setLoading: Dispatch<SetStateAction<boolean>>
 }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
@@ -36,7 +36,7 @@ export const NoteCard = ({
                     <button
                         className={`btn-warning btn-xs btn px-5 ${loading ? 'loading' : '' }`}
                         onClick={()=> {
-                            setLoading(true);
+                            setLoading((currentLoading) => true);
                             onDelete();
                         }}
                         disabled={note.title.trim().length === 0}

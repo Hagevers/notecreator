@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
@@ -9,7 +9,7 @@ export const NoteEditor = ({
 }: {
     onSave: (note: { title: string, content: string }) => void,
     loading: boolean,
-    setLoading: Function
+    setLoading: Dispatch<SetStateAction<boolean>>
 }
 ) => {
 
@@ -43,7 +43,7 @@ export const NoteEditor = ({
             <div className="card-actions justify-end mr-8 mb-5">
                 <button
                     onClick={() => {
-                        setLoading(true);
+                        setLoading((currentLoading) => true);
                         onSave({
                             title,
                             content: code,
