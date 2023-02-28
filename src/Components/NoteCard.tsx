@@ -33,7 +33,7 @@ export const NoteCard = ({
                 <div className="card-actions mx-2 flex justify-end">
                     <button
                         className={`btn-warning btn-xs btn px-5 ${loading ? 'loading' : '' }`}
-                        onClick={onDelete}
+                        onClick={() => onDelete()}
                         disabled={note.title.trim().length === 0 || loading}
                     >
                         Delete

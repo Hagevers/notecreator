@@ -84,10 +84,10 @@ const Content: React.FC = () => {
     }
   });
 
-  const handleDeleteTopic = async () => {
+  const handleDeleteTopic = () => {
     setTopicDeleteLoader(true);
     try {
-      await deleteTopic.mutateAsync({ topicId: selectedTopic?.id ?? "" });
+      deleteTopic.mutateAsync({ topicId: selectedTopic?.id ?? "" });
     } catch (error) {
     } finally {
       setSelectedTopic(null);
@@ -95,10 +95,10 @@ const Content: React.FC = () => {
     }
   }
 
-  const handleDeleteNote = async (noteId: string) => {
+  const handleDeleteNote = (noteId: string) => {
     setNoteDeleteLoader(true);
     try {
-      await deleteNote.mutateAsync({ id: noteId });
+      deleteNote.mutateAsync({ id: noteId });
     } catch (error) {
       setNoteDeleteLoader(false);
     } finally {
@@ -183,7 +183,7 @@ const Content: React.FC = () => {
           <div className={`modal-action`}>
             <label onClick={()=> setDisplayModal(false)} className="btn btn-accent">Close</label>
             <label className={`btn btn-error ${topicDeleteLoader ? 'loading' : ''}`}
-              onClick={handleDeleteTopic}
+              onClick={() => handleDeleteTopic()}
             >
               Delete
             </label>
