@@ -10,7 +10,7 @@ export const NoteCard = ({
     loading,
 }: {
     note: Note,
-    onDelete: () => Promise<void>,
+    onDelete: () => void
     loading: boolean,
 }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(true);

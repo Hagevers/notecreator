@@ -95,7 +95,7 @@ const Content: React.FC = () => {
     }
   }
 
-  const handleDeleteNote = async (noteId: string) : Promise<void> => {
+  const handleDeleteNote = async (noteId: string) => {
     setNoteDeleteLoader(true);
     try {
       await deleteNote.mutateAsync({ id: noteId });
