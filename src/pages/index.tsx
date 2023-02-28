@@ -173,12 +173,12 @@ const Content: React.FC = () => {
             });
           }} />
       </div>
-      <input type="checkbox" id="delete-popup" className="modal-toggle" checked={displayModal}/>
+      <input type="checkbox" id="delete-popup" className="modal-toggle" checked={displayModal} onChange={(e) => setDisplayModal(e.target.value)}/>
       <div className={`modal modal-bottom sm:modal-middle`}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">Are you sure you want to delete this topic?</h3>
+          <div>Be cautious!</div>
           <p className="py-4">
-            <div>Be cautious!</div>
             Topics that have been deleted cannot be retrieved and all the notes inside will be deleted also!
           </p>
           <div className={`modal-action`}>
