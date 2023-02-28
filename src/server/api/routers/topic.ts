@@ -23,12 +23,12 @@ export const topicRouter = createTRPCRouter({
     .input(z.object({ topicId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const [deletedNotesCount, deletedTopic] = await Promise.all([
-        ctx.prisma.note.deleteMany({
+        await ctx.prisma.note.deleteMany({
           where: {
             topicId: input.topicId,
           },
         }),
-        ctx.prisma.topic.delete({
+        await ctx.prisma.topic.delete({
           where: {
             id: input.topicId,
           },
