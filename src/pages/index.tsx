@@ -100,88 +100,92 @@ const Content: React.FC = () => {
 
   return (
     <div className="mx-5 mt-5 grid grid-cols-4 gap-2">
-      <div className="px-2 mt-2">
-        <ul className="menu rounded-box bg-base-100 p-2">
-          {topics?.map((topic) => (
-            <li key={topic.id} className={`flex-row relative`}>
-              <a
-                href="#"
-                className={`flex-1 ${selectedTopic?.id === topic.id ? `active` : ""} `}
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  setSelectedTopic(topic)
-                }}
-              >
-                {topic.title}
-              </a>
-              {selectedTopic?.id === topic.id ?
-                <label
-                  className={`absolute right-0 text-white`}
-                  // htmlFor="delete-popup"
-                  onClick={() => setDisplayModal(true)}
-                >
-                  X
-                </label>
-                : null}
-            </li>
-          ))}
-        </ul>
-        <div className="divider"></div>
-        <input
-          type="text"
-          placeholder="New Topic"
-          className="input-bordered input input-sm w-full focus:outline-0"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              createTopic.mutate({
-                title: e.currentTarget.value,
-              });
-              e.currentTarget.value = "";
-            }
-          }}
-        />
-      </div>
-      <div className="col-span-3">
-        <div>
-          {notes?.map((note) => (
-            <div key={note.id} className="mt-5">
-              <NoteCard
-                loading={noteDeleteLoader}
-                note={note}
-                onDelete={() => handleDeleteNote(note.id)}
-              />
-            </div>
-          ))}
-        </div>
-        <NoteEditor
-          loading={noteCreateLoader}
-          onSave={({ title, content }) => {
-            setNoteCreateLoader(true);
-            void createNote.mutate({
-              title,
-              content,
-              topicId: selectedTopic?.id ?? "",
-            });
-          }} />
-      </div>
-      <input type="checkbox" id="delete-popup" className="modal-toggle" checked={displayModal} onChange={(e) => console.log(e.target.value)} />
-      <div className={`modal modal-bottom sm:modal-middle`}>
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Are you sure you want to delete this topic?</h3>
-          <div>Be cautious!</div>
-          <p className="py-4">
-            Topics that have been deleted cannot be retrieved and all the notes inside will be deleted also!
-          </p>
-          <div className={`modal-action`}>
-            <label onClick={() => setDisplayModal(false)} className="btn btn-accent">Close</label>
-            <label className={`btn btn-error ${topicDeleteLoader ? 'loading' : ''}`}
-              onClick={() => handleDeleteTopic()}
-            >
-              Delete
-            </label>
+      {sessionData?.user !== undefined ?
+        <>
+          <div className="px-2 mt-2">
+            <ul className="menu rounded-box bg-base-100 p-2">
+              {topics?.map((topic) => (
+                <li key={topic.id} className={`flex-row relative`}>
+                  <a
+                    href="#"
+                    className={`flex-1 ${selectedTopic?.id === topic.id ? `active` : ""} `}
+                    onClick={(evt) => {
+                      evt.preventDefault();
+                      setSelectedTopic(topic)
+                    }}
+                  >
+                    {topic.title}
+                  </a>
+                  {selectedTopic?.id === topic.id ?
+                    <label
+                      className={`absolute right-0 text-white`}
+                      // htmlFor="delete-popup"
+                      onClick={() => setDisplayModal(true)}
+                    >
+                      X
+                    </label>
+                    : null}
+                </li>
+              ))}
+            </ul>
+            <div className="divider"></div>
+            <input
+              type="text"
+              placeholder="New Topic"
+              className="input-bordered input input-sm w-full focus:outline-0"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  createTopic.mutate({
+                    title: e.currentTarget.value,
+                  });
+                  e.currentTarget.value = "";
+                }
+              }}
+            />
           </div>
-        </div>
-      </div>
+          <div className="col-span-3">
+            <div>
+              {notes?.map((note) => (
+                <div key={note.id} className="mt-5">
+                  <NoteCard
+                    loading={noteDeleteLoader}
+                    note={note}
+                    onDelete={() => handleDeleteNote(note.id)}
+                  />
+                </div>
+              ))}
+            </div>
+            <NoteEditor
+              loading={noteCreateLoader}
+              onSave={({ title, content }) => {
+                setNoteCreateLoader(true);
+                void createNote.mutate({
+                  title,
+                  content,
+                  topicId: selectedTopic?.id ?? "",
+                });
+              }} />
+          </div>
+          <input type="checkbox" id="delete-popup" className="modal-toggle" checked={displayModal} onChange={(e) => console.log(e.target.value)} />
+          <div className={`modal modal-bottom sm:modal-middle`}>
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Are you sure you want to delete this topic?</h3>
+              <div>Be cautious!</div>
+              <p className="py-4">
+                Topics that have been deleted cannot be retrieved and all the notes inside will be deleted also!
+              </p>
+              <div className={`modal-action`}>
+                <label onClick={() => setDisplayModal(false)} className="btn btn-accent">Close</label>
+                <label className={`btn btn-error ${topicDeleteLoader ? 'loading' : ''}`}
+                  onClick={() => handleDeleteTopic()}
+                >
+                  Delete
+                </label>
+              </div>
+            </div>
+          </div>
+        </>
+        : null}
     </div>
   )
 }
