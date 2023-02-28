@@ -59,7 +59,7 @@ const Content: React.FC = () => {
       setTopicDeleteLoader(false);
     }
   });
- 
+
 
   const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
     {
@@ -86,24 +86,16 @@ const Content: React.FC = () => {
 
   const handleDeleteTopic = () => {
     setTopicDeleteLoader(true);
-    try {
-      deleteTopic.mutateAsync({ topicId: selectedTopic?.id ?? "" });
-    } catch (error) {
-    } finally {
-      setSelectedTopic(null);
-      setDisplayModal(false);
-    }
+    deleteTopic.mutateAsync({ topicId: selectedTopic?.id ?? "" });
+    setSelectedTopic(null);
+    setDisplayModal(false);
   }
 
   const handleDeleteNote = (noteId: string) => {
     setNoteDeleteLoader(true);
-    try {
-      deleteNote.mutateAsync({ id: noteId });
-    } catch (error) {
-      setNoteDeleteLoader(false);
-    } finally {
-      setNoteDeleteLoader(false);
-    }
+    deleteNote.mutateAsync({ id: noteId });
+    setNoteDeleteLoader(false);
+    setNoteDeleteLoader(false);
   }
 
   return (
@@ -126,7 +118,7 @@ const Content: React.FC = () => {
                 <label
                   className={`absolute right-0 text-white`}
                   // htmlFor="delete-popup"
-                  onClick={()=> setDisplayModal(true)}
+                  onClick={() => setDisplayModal(true)}
                 >
                   X
                 </label>
@@ -172,7 +164,7 @@ const Content: React.FC = () => {
             });
           }} />
       </div>
-      <input type="checkbox" id="delete-popup" className="modal-toggle" checked={displayModal} onChange={(e) => console.log(e.target.value)}/>
+      <input type="checkbox" id="delete-popup" className="modal-toggle" checked={displayModal} onChange={(e) => console.log(e.target.value)} />
       <div className={`modal modal-bottom sm:modal-middle`}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">Are you sure you want to delete this topic?</h3>
@@ -181,7 +173,7 @@ const Content: React.FC = () => {
             Topics that have been deleted cannot be retrieved and all the notes inside will be deleted also!
           </p>
           <div className={`modal-action`}>
-            <label onClick={()=> setDisplayModal(false)} className="btn btn-accent">Close</label>
+            <label onClick={() => setDisplayModal(false)} className="btn btn-accent">Close</label>
             <label className={`btn btn-error ${topicDeleteLoader ? 'loading' : ''}`}
               onClick={() => handleDeleteTopic()}
             >
