@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { Header } from "~/Components/Header";
 import { api, type RouterOutputs } from "~/utils/api";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { NoteEditor } from "~/Components/NoteEditor";
 import { NoteCard } from "~/Components/NoteCard";
 
@@ -27,7 +27,6 @@ const Home: NextPage = () => {
 export default Home;
 
 type Topic = RouterOutputs["topic"]["getAll"][0];
-type Note = RouterOutputs["note"]["getAll"][0];
 
 const Content: React.FC = () => {
   const { data: sessionData } = useSession();
