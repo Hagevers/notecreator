@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { Header } from "~/Components/Header";
 import { api, type RouterOutputs } from "~/utils/api";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NoteEditor } from "~/Components/NoteEditor";
 import { NoteCard } from "~/Components/NoteCard";
 
@@ -27,6 +27,7 @@ const Home: NextPage = () => {
 export default Home;
 
 type Topic = RouterOutputs["topic"]["getAll"][0];
+type Note = RouterOutputs["note"]["getAll"][0];
 
 const Content: React.FC = () => {
   const { data: sessionData } = useSession();
@@ -34,6 +35,8 @@ const Content: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [noteCreateLoader, setNoteCreateLoader] = useState<boolean>(false);
   const [noteDeleteLoader, setNoteDeleteLoader] = useState<boolean>(false);
+  const [topicDeleteLoader, setTopicDeleteLoader] = useState<boolean>(false);
+  const [displayModal, setDisplayModal] = useState<boolean>(false);
 
   const { data: topics, refetch: refetchTopics } = api.topic.getAll.useQuery(
     undefined,
@@ -54,6 +57,7 @@ const Content: React.FC = () => {
   const deleteTopic = api.topic.delete.useMutation({
     onSuccess: () => {
       void refetchTopics();
+      setTopicDeleteLoader(false);
     }
   });
  
@@ -81,9 +85,26 @@ const Content: React.FC = () => {
     }
   });
 
-  const handleDeleteTopic = () => {
-    void deleteTopic.mutate({ topicId: selectedTopic?.id ?? "" });
-    setSelectedTopic(null);
+  const handleDeleteTopic = async () => {
+    setTopicDeleteLoader(true);
+    try {
+      await deleteTopic.mutateAsync({ topicId: selectedTopic?.id ?? "" });
+    } catch (error) {
+    } finally {
+      setSelectedTopic(null);
+      setDisplayModal(false);
+    }
+  }
+
+  const handleDeleteNote = async (noteId: string) => {
+    setNoteDeleteLoader(true);
+    try {
+      await deleteNote.mutateAsync({ id: noteId });
+    } catch (error) {
+      setNoteDeleteLoader(false);
+    } finally {
+      setNoteDeleteLoader(false);
+    }
   }
 
   return (
@@ -105,7 +126,8 @@ const Content: React.FC = () => {
               {selectedTopic?.id === topic.id ?
                 <label
                   className={`absolute right-0 text-white`}
-                  htmlFor="delete-popup"
+                  // htmlFor="delete-popup"
+                  onClick={()=> setDisplayModal(true)}
                 >
                   X
                 </label>
@@ -134,17 +156,16 @@ const Content: React.FC = () => {
             <div key={note.id} className="mt-5">
               <NoteCard
                 loading={noteDeleteLoader}
-                setLoading={setNoteDeleteLoader}
                 note={note}
-                onDelete={() => void deleteNote.mutate({ id: note.id })}
+                onDelete={() => handleDeleteNote(note.id)}
               />
             </div>
           ))}
         </div>
         <NoteEditor
           loading={noteCreateLoader}
-          setLoading={setNoteCreateLoader}
           onSave={({ title, content }) => {
+            setNoteCreateLoader(true);
             void createNote.mutate({
               title,
               content,
@@ -152,17 +173,17 @@ const Content: React.FC = () => {
             });
           }} />
       </div>
-      <input type="checkbox" id="delete-popup" className="modal-toggle" />
-      <div className="modal modal-bottom sm:modal-middle">
+      <input type="checkbox" id="delete-popup" className="modal-toggle" checked={displayModal}/>
+      <div className={`modal modal-bottom sm:modal-middle`}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">Are you sure you want to delete this topic?</h3>
           <p className="py-4">
             <div>Be cautious!</div>
             Topics that have been deleted cannot be retrieved and all the notes inside will be deleted also!
           </p>
-          <div className="modal-action">
-            <label htmlFor="delete-popup" className="btn btn-accent">Close</label>
-            <label htmlFor="delete-popup" className="btn btn-error"
+          <div className={`modal-action`}>
+            <label onClick={()=> setDisplayModal(false)} className="btn btn-accent">Close</label>
+            <label className={`btn btn-error ${topicDeleteLoader ? 'loading' : ''}`}
               onClick={handleDeleteTopic}
             >
               Delete

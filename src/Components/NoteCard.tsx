@@ -8,12 +8,10 @@ export const NoteCard = ({
     note,
     onDelete,
     loading,
-    setLoading
 }: {
     note: Note,
-    onDelete: () => void,
+    onDelete: () => Promise<void>,
     loading: boolean,
-    setLoading: Dispatch<SetStateAction<boolean>>
 }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
@@ -35,11 +33,8 @@ export const NoteCard = ({
                 <div className="card-actions mx-2 flex justify-end">
                     <button
                         className={`btn-warning btn-xs btn px-5 ${loading ? 'loading' : '' }`}
-                        onClick={()=> {
-                            setLoading((currentLoading) => true);
-                            onDelete();
-                        }}
-                        disabled={note.title.trim().length === 0}
+                        onClick={onDelete}
+                        disabled={note.title.trim().length === 0 || loading}
                     >
                         Delete
                     </button>
